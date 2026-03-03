@@ -47,11 +47,12 @@ def train_model(model, train_loader, epochs, lr, margin, save_path):
 
             loss = criterion(emb1, emb2, label)
 
+            logger.info(f"loss : {loss}")
+
             loss.backward()
             optimizer.step()
 
             total_loss += loss.item()
-            logger.info(f"Total loss: {total_loss}")
 
         avg_loss = total_loss / len(train_loader)
         logger.info(f"Epoch {epoch+1} Loss = {avg_loss:.6f}")

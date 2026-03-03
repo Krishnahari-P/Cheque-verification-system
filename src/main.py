@@ -61,22 +61,22 @@ def main() -> None:
             train_ds,
             batch_size=model_cfg.training.batch_size,
             shuffle=True,
-            num_workers=4,
-            pin_memory=True
+            num_workers=0,
+            pin_memory=False
         )
 
         val_loader = DataLoader(
             val_ds,
             batch_size=model_cfg.training.batch_size,
             shuffle=False,
-            num_workers=4
+            num_workers=0
         )
 
         test_loader = DataLoader(
             test_ds,
             batch_size=model_cfg.training.batch_size,
             shuffle=False,
-            num_workers=4
+            num_workers=0
         )
 
         logger.success("Datasets and DataLoaders initialized")

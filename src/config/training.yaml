@@ -1,7 +1,7 @@
 training:
   epochs: 15
-  batch_size: 32
-  learning_rate: 1e-5
+  batch_size: 4
+  learning_rate: 1e-4
 
 model:
   embedding_size: 256

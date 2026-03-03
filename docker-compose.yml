@@ -38,6 +38,7 @@ services:
     depends_on:
       mlflow:
         condition: service_healthy
+    shm_size: "2gb"
     volumes:
       - ./src:/app/src                       
       - ./src/data:/app/src/data              

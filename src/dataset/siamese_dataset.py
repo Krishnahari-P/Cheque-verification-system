@@ -2,41 +2,51 @@ import torch
 from torch.utils.data import Dataset
 from pathlib import Path
 import numpy as np
-import torchvision.transforms as T
 
 from src.preprocessing.pipeline import PreprocessingPipeline
 from src.dataset.cache_utils import load_cached_roi, save_cached_roi
+from src.utils.image_utils import resize_with_padding
 
 
 class SiamesePairDataset(Dataset):
     def __init__(self, df):
         self.df = df.reset_index(drop=True)
         self.pipeline = PreprocessingPipeline()
+
         self.raw_root = Path("src/data/raw")
         self.cache_root = Path("src/data/signatures")
 
     def _get_image(self, rel_path: str):
+        rel_path = Path(rel_path).as_posix()
+
         raw_path = self.raw_root / rel_path
         cache_path = self.cache_root / rel_path
 
         roi = load_cached_roi(cache_path)
+
         if roi is None:
             result = self.pipeline.run(raw_path)
             if not result.success:
                 raise RuntimeError(f"Preprocessing failed for {rel_path}")
+
             roi = result.roi
+            roi = resize_with_padding(roi, target_size=256)
+
+            cache_path.parent.mkdir(parents=True, exist_ok=True)
             save_cached_roi(cache_path, roi)
 
-        roi = roi.astype(np.float32)
-        roi = roi / 127.5 - 1.0
+        roi = roi.astype(np.float32) / 255.0
         roi = torch.from_numpy(roi).unsqueeze(0)
+
         return roi
 
     def __getitem__(self, idx):
         row = self.df.iloc[idx]
+
         img1 = self._get_image(row.image1)
         img2 = self._get_image(row.image2)
         label = torch.tensor(float(row.label), dtype=torch.float32)
+
         return img1, img2, label
 
     def __len__(self):
