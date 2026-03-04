@@ -1,10 +1,20 @@
 from sklearn.model_selection import train_test_split
 
-def stratified_split(df):
-    train, temp = train_test_split(
-        df, test_size=0.3, stratify=df["label"], random_state=42
+def writer_disjoint_split(df, train_ratio=0.7, val_ratio=0.15, test_ratio=0.15, seed=42):
+    assert abs(train_ratio + val_ratio + test_ratio - 1.0) < 1e-6
+    writers = df["writer_id"].unique()
+    train_writers, temp_writers = train_test_split(
+        writers,
+        test_size=(1 - train_ratio),
+        random_state=seed
     )
-    val, test = train_test_split(
-        temp, test_size=1/3, stratify=temp["label"], random_state=42
+    val_writers, test_writers = train_test_split(
+        temp_writers,
+        test_size=test_ratio / (val_ratio + test_ratio),
+        random_state=seed
     )
-    return train, val, test
+    train_df = df[df["writer_id"].isin(train_writers)].reset_index(drop=True)
+    val_df   = df[df["writer_id"].isin(val_writers)].reset_index(drop=True)
+    test_df  = df[df["writer_id"].isin(test_writers)].reset_index(drop=True)
+
+    return train_df, val_df, test_df

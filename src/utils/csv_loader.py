@@ -2,8 +2,7 @@ import pandas as pd
 
 def load_pairs_csv(path: str) -> pd.DataFrame:
     df = pd.read_csv(path)
-
-    required = {"image1", "image2", "label"}
+    required = {"writer_id","image1", "image2", "label"}
     if not required.issubset(df.columns):
         raise ValueError("CSV must contain image_path1, image_path2, label")
 

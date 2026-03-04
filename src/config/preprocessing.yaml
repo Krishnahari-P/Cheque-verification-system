@@ -86,7 +86,7 @@ roi_extraction:
     pad_color: 255
 
 output:
-  save_intermediates: true       
+  save_intermediates: false       
   intermediate_dir: "src/data/processed/intermediates"
   final_dir: "src/data/signatures"
   format: "png"                    # png | jpg | tiff

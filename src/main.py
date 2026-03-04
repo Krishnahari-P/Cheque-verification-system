@@ -16,7 +16,7 @@ from src.utils.logging import setup_logging
 from src.utils.config_loader import preprocessing_cfg, model_cfg,training_cfg
 from src.dataset.siamese_dataset import SiamesePairDataset
 from src.utils.csv_loader import load_pairs_csv
-from src.utils.split import stratified_split
+from src.utils.split import writer_disjoint_split
 from src.models.siamese_network import SiameseNetwork
 from src.training.trainer import train_model
 
@@ -46,7 +46,7 @@ def main() -> None:
         df = load_pairs_csv("/app/src/data/csv/data.csv")
         logger.info(f"Loaded CSV with {len(df)} pairs")
 
-        train, val, test = stratified_split(df)
+        train, val, test = writer_disjoint_split(df)
 
         logger.info(
             f"Split sizes → Train: {len(train)}, "
